@@ -1,0 +1,33 @@
+#!/bin/sh
+tfile=$*
+
+BINARY_TYPE=`uname`
+
+hpd2u(){
+	hpfile=$1
+	dos2ux $hpfile > $hpfile.tmp
+	rm -f $hpfile
+	mv $hpfile.tmp $hpfile
+	chmod 755 $hpfile
+}
+
+case "$BINARY_TYPE" in
+	'Linux')
+		dos2unix $tfile
+		exit 0
+		;;
+	'HP-UX')
+		temp=`ls $tfile`
+		#echo temp:$temp
+		for sfile in $temp;
+		do
+			hpd2u ${sfile}
+		done
+		exit 0
+		;;
+	*)
+		echo unknown
+		exit 0
+		;;
+esac
+

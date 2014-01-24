@@ -1,0 +1,15 @@
+#
+# profile.jhlava:
+#   Setup openlava environment variables
+#
+export JHLAVA_TOP=__LAVATOP__
+export BINARY_TYPE=`${JHLAVA_TOP}/etc/host.type`
+export LSF_TOP=${JHLAVA_TOP}
+export LSF_ENVDIR=${JHLAVA_TOP}/conf
+export LSF_BINDIR=${JHLAVA_TOP}/bin/${BINARY_TYPE}
+export LSF_SERVERDIR=${JHLAVA_TOP}/sbin/${BINARY_TYPE}
+export LSF_LIBDIR=${JHLAVA_TOP}/lib/${BINARY_TYPE}
+export LSF_LOGDIR=${JHLAVA_TOP}/log
+
+export PATH=${LSF_BINDIR}:${LSF_BINDIR}/..:$PATH
+export LD_LIBRARY_PATH=${JHLAVA_TOP}/lib/${BINARY_TYPE}:${LD_LIBRARY_PATH}

@@ -1,0 +1,20 @@
+#!/bin/sh
+
+BINARY_TYPE=`uname`
+
+if [ $# = 1 ]; then
+	cat /proc/version | awk '{if(index($0, "SUSE")) {print "SUSE"} else if(index($0, "Red Hat")) {print "Red Hat"}}'
+	exit 0
+fi
+
+case "$BINARY_TYPE" in
+	'Linux')
+		echo linux-x86_64
+		exit 0
+		;;
+
+	*)
+		echo unknown
+		exit 0
+		;;
+esac

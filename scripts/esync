@@ -1,0 +1,12 @@
+#!/bin/sh
+#
+# Run the rsync from the slave lim to sync up the 
+# configuration from the master.
+#
+# -v increase verbosity so we can log something in
+#    our lim.log.hostname
+# -a archive mode: recursive, preserve links time and ownership
+# -z compress the data
+#
+rsync -e ssh -vaz bobrock: '/opt/openlava/etc/lsf.cluster.openlava /opt/openlava/etc/lsf.shared' /opt/openlava
+

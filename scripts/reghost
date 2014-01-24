@@ -1,0 +1,61 @@
+#!/bin/sh
+##############################################################
+
+MasterHost=@MasterHost@
+MasterIP=@MasterIP@
+MasterUser=root
+MasterPwd=@MasterPwd@
+MasterJHtop=@MasterJHtop@
+
+
+ReplaceString(){
+_old=$1
+_new=$2
+cat $LSF_ENVDIR/lsf.cluster.__CLUSTERNAME__ | awk 'begin { start=0; end=0; } { 
+                                if($1=="HOSTNAME") {start=1;} 
+                                if($1=="End" && start) {end=1;} 
+                                if(start&&!end) { 
+                                        if( $1 == "'$_old'"){
+                                                line = $0
+                                                gsub("'$_old'", "'$_new'",line)
+                                                print line
+                                        }else{
+                                                print $0
+                                        }
+                                }else{
+                                        print $0
+                                } 
+                        }' > $LSF_ENVDIR/bak.lsf.cluster
+mv -f $LSF_ENVDIR/bak.lsf.cluster $LSF_ENVDIR/lsf.cluster.__CLUSTERNAME__
+}
+
+HOSTNAME=`hostname`
+HOSTIP=`ifconfig eth0 |grep "inet addr" | awk '{ print $2}' | awk 'BEGIN {FS=":"} {print $2}'`
+#check is this host a new vm host
+hostipfile=${JHLAVA_TOP}/etc/hostip
+if [ -f ${hostipfile} ]; then
+	oldIP=`cat ${hostipfile}`
+	if [ "${oldIP}" = "${HOSTNAME} ${HOSTIP}" ]; then
+		exit
+	else
+		oldHost=`echo $oldIP | awk '{print $1}'`
+		if [ $HOSTNAME != $oldHost ]; then
+			ReplaceString $oldHost $HOSTNAME	
+		fi
+	fi
+fi
+
+echo ${HOSTNAME} ${HOSTIP} > ${hostipfile}
+
+exitIP=`cat /etc/hosts |grep $HOSTIP`
+if [ "x$exitIP" = "x" ]; then
+        echo "$HOSTIP    $HOSTNAME" >> /etc/hosts
+fi
+exitIP=
+exitIP=`cat /etc/hosts |grep $MasterIP`
+if [ "x$exitIP" = "x" ]; then
+	echo "$MasterIP    $MasterHost" >> /etc/hosts
+fi   
+
+${JHLAVA_TOP}/sbin/ssh_cmd $MasterHost $MasterUser $MasterPwd "${MasterJHtop}/sbin/adoptHost ${HOSTNAME} ${HOSTIP}"
+

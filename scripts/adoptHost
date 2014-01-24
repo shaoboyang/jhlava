@@ -1,0 +1,26 @@
+#!/bin/sh
+##############################################################
+pdir=`dirname $0`
+curPath=`cd $pdir ; pwd`
+
+newIP=$2
+newHostname=$1
+newMode=$3
+
+if [ "x$newMode" = "x" ]; then
+	newMode=IntelI5
+fi
+
+exitIP=`cat /etc/hosts |grep $newIP`
+if [ "x$exitIP" = "x" ]; then
+        echo "$newIP    $newHostname" >> /etc/hosts
+else
+	cat /etc/hosts |awk '{if($1 != "'$newIP'") print $0}' > /etc/hosts.new
+	mv -f /etc/hosts /etc/hosts.bak
+	mv -f /etc/hosts.new /etc/hosts
+	echo "$newIP    $newHostname" >> /etc/hosts 
+fi
+
+. $curPath/../conf/profile.jhlava
+${LSF_BINDIR}/lsaddhost -m $newMode -t LINUX64 $newHostname
+

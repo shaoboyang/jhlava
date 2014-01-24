@@ -1,0 +1,35 @@
+#!/bin/sh
+
+##
+## set up the compute nodes
+##
+
+##
+## exit if LSF_ENVDIR is not set
+##
+if [ "x"$LSF_ENVDIR = "x" ]; then
+        echo "LSF_ENVDIR is not set. Exiting..."
+	exit 1
+fi
+
+##
+## source the lsf.conf file
+##
+if [ -f ${LSF_ENVDIR}/lsf.conf ]; then
+	. ${LSF_ENVDIR}/lsf.conf
+fi
+
+##
+## install the openlava startup file
+##
+cp $LSF_TOP/bin/jhlava /etc/init.d
+
+##
+##
+##
+
+##
+## configure the lava service to start at boot
+##
+/sbin/chkconfig --add jhlava
+/sbin/chkconfig jhlava on

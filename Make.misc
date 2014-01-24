@@ -1,0 +1,46 @@
+# $Id: Make.misc,v 1.0 yongdu Exp $
+# Shared rules included in all Makefiles
+# Sub-makefiles must define TOP to .. or ../.. to refer to this top
+# level directory
+###########################################################################
+
+PNAME = jhlava-1.0
+
+EXEEXT = 
+OBJEXT = o
+LEXT = a
+
+CFLAGS = -Wall -O2
+OS_TYPE = $(shell uname)
+OS_NAME = $(shell $(TOP)/config/host.type -a)
+
+BINARY_TYPE = $(shell $(TOP)/config/host.type)
+TNAME = $(PNAME)-$(BINARY_TYPE)
+DISTDIR = $(TOP)/dist/$(BINARY_TYPE)/$(PNAME)
+
+GCC = gcc
+ARFLAGS = cru
+AR = ar $(ARFLAGS)
+RANLIB = ranlib
+
+ifeq ($(OS_TYPE), Linux)
+HOSTTYPE = LINUX64
+CFLAGS := $(CFLAGS) -DLINUX -D$(HOSTTYPE) -DHOST_TYPE_STRING=\"$(HOSTTYPE)\"
+LDFLAGS = -L$(TOP)/3rd-lib/$(BINARY_TYPE) 
+LNSL = -lnsl
+TCL = -ltcl
+NCURSES = -lncurses
+endif
+
+CC = $(GCC) $(DEFAULT_INCLUDES) $(INCLUDES) $(CFLAGS)
+ifeq ($(OS_NAME), SUSE)
+LINK = $(GCC) -Wl,--hash-style=sysv $(CFLAGS) $(LDFLAGS) -o $@ $(LDLIBS)
+else
+LINK = $(GCC) $(CFLAGS) $(LDFLAGS) -o $@ $(LDLIBS)
+endif
+
+
+INSTALL = $(TOP)/install-sh
+
+DEFAULT_INCLUDES = -I./ -I$(TOP)/3rd-lib/include/glib-2.0 -I$(TOP)/3rd-lib/include/glib-2.0/glib -I$(TOP) -I$(TOP)/lsf
+LSFLIBS = $(TOP)/lsf/lib/liblsf.$(LEXT) $(TOP)/lsf/intlib/liblsfint.$(LEXT)

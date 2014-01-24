@@ -1,0 +1,21 @@
+#
+# cshrc.jhlava:
+#     Sets the C shell user environment for openlava commands
+#
+setenv JHLAVA_TOP __LAVATOP__
+set BINARY_TYPE=`${JHLAVA_TOP}/etc/host.type`
+setenv BINARY_TYPE ${BINARY_TYPE}
+setenv LSF_TOP ${JHLAVA_TOP}
+setenv LSF_ENVDIR ${JHLAVA_TOP}/conf
+setenv LSF_BINDIR ${JHLAVA_TOP}/bin/${BINARY_TYPE}
+setenv LSF_SERVERDIR ${JHLAVA_TOP}/sbin/${BINARY_TYPE}
+setenv LSF_LIBDIR ${JHLAVA_TOP}/lib/${BINARY_TYPE}
+setenv LSF_LOGDIR ${JHLAVA_TOP}/log
+
+setenv PATH ${LSF_BINDIR}/..:${LSF_BINDIR}:${PATH}
+
+if ($?LD_LIBRARY_PATH) then
+        setenv LD_LIBRARY_PATH ${JHLAVA_TOP}/lib/${BINARY_TYPE}:${LD_LIBRARY_PATH}
+else
+        setenv LD_LIBRARY_PATH ${JHLAVA_TOP}/lib/${BINARY_TYPE}
+endif

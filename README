@@ -1,0 +1,258 @@
+# README for JH Lava 1.0 (2013)
+# Copyright (C) 2013 JHInno Inc
+# Copyright (C) 2011 - 2012  David Bigagli
+# Copyright (C) 2007 Platform Computing Inc
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of version 2 of the GNU General Public License as
+# published by the Free Software Foundation.
+# 	
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+#
+
+JH Lava is open-source software for workload management. It is a new 
+branch which is based on openlava2.0. Compared to openlava, JH Lava 
+fixes many serious bugs and adds a couple of new features.
+
+More information about openlava: Please visit wwww.openlava.org
+
+===============
+Supported OS
+===============
+
+JH Lava is supported on Linux x86_64 platform. 
+Currently, it is fully tested on:
+
+ * SLES10 SLES11
+ * RHEL4.8 RHEL5.8 RHEL6.4
+
+==============
+Changes
+==============
+
+List of key changes is below. Please contact us for more details.
+
+ * elim management support
+
+   elim management is used to start and manage one or more elims. It 
+   used to collect all the elims' information and send back to lim. 
+   Configure LIM_MELIM=Y in lsf.conf to enable this feature.
+
+
+ * User group admin support
+ 
+   User group admin enables configuration of an admin user group and 
+   to control the users who can manage jobs (such as modify or 
+   kill jobs) for each user group member.
+
+   
+ * detailed CPU information support
+ 
+   Enhance lim to collect CPU detail information and display sockets, 
+   cores and threads information by lshosts command.
+
+
+ * short hosts format support 
+ 
+   support bjobs display short execution hosts by default. It will 
+   display "4*host1" instead of "host1 host1 host1 host1".
+
+    
+ * fix issue: sbatch hang
+    
+   sbatch will hang forever when it starts a job during creating .lsbatch
+   directory process. It causes the job running status forever but 
+   actually does not start.
+
+ 
+ * fix issue: bad job rusage report
+ 
+   Job's rusage reported by bjobs -l command is wrong on some linux 
+   platform. The root cause is sbatch reports a bad value.
+
+ 
+ * fix issue: pim collect process information wrongly
+    
+   pim failed to monitor process's information and dump bad results in 
+   its log file.
+
+    
+ * fix issue: b*command failed after reconfig operation
+    
+   b* command shows below error message when performed after badmin 
+   reconfig: 
+   Failed in an Batch library call: Failed in sending/receiving a 
+   message: Connection reset by peer
+
+
+ * fix issue: lsrun -p failed
+ 
+   Currently, lsrun -p will run command on each process. This behavior 
+   is not correct. Instead, the fix the command run on each host.
+
+
+ * fix issue: lim core dump
+ 
+   This core dump is caused by incorrect network environment. One case 
+   is that the master node knows each server node but one of server 
+   node does not know the master node. This which will cause lim 
+   on these 2 node go into a dead communication loop and core dump 
+   sometime.
+
+
+ * fix issue: lim core dump
+    
+   lim will core dump sometimes when it becomes the new master lim if 
+   old master node was unavailable for a while.
+
+    
+ * fix issue: bsub command core dump
+    
+   bsub may core dump sometimes during submitting one job. It is caused 
+   by some variables not been initialized inside bsub command.
+
+    
+ * fix issue: lsrun missing output on some execution node
+    
+   lsrun -P will miss showing command's output on some nodes sometimes 
+   when it is run on a large cluster.
+
+    
+ * fix issue: bjobs displays wrong pending reason
+    
+   bjobs -lp will display redundant pending reasons sometimes.
+
+
+ * fix issue: bsub -f causes wrong file permission
+    
+   The file's permission is incorrect if it is copied from a 
+   remote node by the bsub -f command.
+
+
+ * fix issue: exclusive job makes host closed forever
+    
+   host status become closed and can not anymore accept jobs
+   if one exclusive job finished on it and lim does reconfig operation.
+
+    
+ * fix issue: badmin hstartup failed
+    
+   badmin hstartup failed to start daemon on a remote node which reports 
+   rsh error. 
+
+   
+ * fix issue: lsload displays wrong swp value
+ 
+   real time swp size is larger than maxswp reported by lsload sometimes.
+
+   
+ * fix issue: new jobId assigned incorrectly
+ 
+   A new jobId will be used even if the job is not submitted successfully.
+
+   
+ * fix issue: CPU detailed information collection failed
+ 
+   lim collection of sockets, cores and threads information failed 
+   on RHEL5.1 and RHEL4.7 platforms.
+
+   
+ * fix issue: bhosts displays wrong MAX value
+ 
+   the default value of MAX displayed by bhosts is not consistent with 
+   the value of ncpus displayed by lshosts.
+
+ 
+ * fix issue: bjobs -lp dumps core 
+ 
+   bjobs -lp will core dump when there are very large jobs and lots of
+   hosts in system and some of jobs have -m option. 
+   
+   
+ * fix issue: child mbatchd dumps core
+ 
+   child mbatchd dump cores during handling bhosts request sometimes.
+
+   
+ * fix issue: dynamic resources value updated very slowly
+ 
+   enhanced melim reporting resource mechanism to let it update 
+   resource value faster.
+
+      
+ * fix issue: lsload help information error
+ 
+   fix help information error display by lsload -h command
+
+   
+ * fix issue: lshosts core dump
+ 
+   lshosts command dump core if one host name is the same as the cluster 
+   name.
+
+   
+ * fix issue: bmod -Jn failed
+ 
+   bmod -Jn cannot cancel job names modify operation.
+
+   
+ * fix issue: invalid error message displayed
+ 
+   there are some error message displayed for mbatchd during longevity 
+   testing.
+
+       
+ * fix issue: melim failed due to wrong elim
+ 
+   Once one elim has an error during starting, it will cause melim fail 
+   to work and report error message.
+
+
+ * fix issue: bpost failed
+ 
+   bpost causes mbatchd core dump if the job is already done.
+   
+   
+ * fix issue: lsadmin *debug do not work
+ 
+   lsadmin limdebug and lsadmin resdebug command failed to work and the 
+   report the sub-command is not recognised.
+
+   
+ * fix issue: badmin *debug does not work
+ 
+   badmin mbddebug and badmin sbddebug command failed to work and they 
+   report that the sub-command is not recognised.
+
+
+ * fix issue: bpeek failed
+
+   bpeek command cannot display job output or takes a very long time
+   to perform sometimes on some linux platform.
+   
+   
+ * fix issue: bread command failed
+ 
+   bread command failed and displays XDR error.
+   
+   
+ * fix issue: lsadmin *time does not work
+ 
+   lsadmin limtime and lsadmin restime command failed to work and they 
+   report the sub-command is not recognised.
+
+   
+ * fix issue: badmin *time do not work
+ 
+   badmin mbdtime and badmin sbdtime command failed to work and they 
+   report the sub-command is not recognised.
+
+ 
+ * and more

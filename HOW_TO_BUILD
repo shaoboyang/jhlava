@@ -1,0 +1,18 @@
+JH Lava 1.0 How to build
+***********************
+
+Build platform
+===========
+Red Hat Enterprise Linux 4.8 or Above.
+
+Prerequisite
+===========
+ 1. dos2unix
+ 2. tcl-devel
+
+Build steps
+===========
+ 1. 'cd' to the top directory of source code
+ 2. run make 
+ 3. run make package
+ 4. Get package from directory $src_top/dist/

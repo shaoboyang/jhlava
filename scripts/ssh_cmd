@@ -1,0 +1,33 @@
+#!/usr/bin/expect -f
+log_user 1
+set hostname [lindex $argv 0]
+set user [lindex $argv 1]
+set passwd [lindex $argv 2]
+set cmd [lindex $argv 3]
+set localtion [lindex $argv 4]
+set pwdTimes 0
+
+set force_conservative 1
+if {$force_conservative} {
+    set send_slow {128 .1}
+}
+#expect_before  eof  eofproc
+spawn ssh $user@$hostname "$cmd";
+expect {
+    -timeout 180
+    "*continue connecting (yes/no)?" { send -s "yes\r"; exp_continue }
+    "*assword:" {
+        if { $pwdTimes == 0 } {
+            send -s "$passwd\r";
+            set pwdTimes 1;
+            exp_continue
+        } else {
+            send -s \003;
+            puts stderr "Username or password error.";
+            exit;
+        }
+    }
+    timeout { puts stderr "Connect timeout.";exit }
+}
+ 
+#interact;

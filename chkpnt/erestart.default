@@ -1,0 +1,23 @@
+#!/bin/sh
+
+jobid=`env | grep LSB_JOBID | cut -d'=' -f2`
+jobcmd=`bjobs -l $jobid | awk '
+/\r$/                   { gsub("\r$","") } # change Windows newlines to Unix
+/^---/                  { skip = 0; reason = 0; next; }
+/^ SCHEDULING /         { printf " "; skip = 1; reason = 0; next; }
+/^ [A-Z]* REASON/       { printf ">, Reasons <"; reason = 1; next; }
+/^Job /                 { skip = 0; reason = 0; printf "\n\n%s", $0; next; }
+/^[A-Za-z]/             { if (!reason) { sub(": ", ">, "); printf ", Event <"; }; }
+/^                  /   { sub("^                     ", ""); }
+/,$/                    { sub(",$", ", "); }
+/Job$/                  { sub("Job$", "Job "); }
+/Submitted from host/   { sub("[>] with hold[, ]", "\n"); }
+/^MEM:/                 { sub(";", ""); printf ">, Memory <"$2" "$3">, Swap <"$5" "$6">, "; next; }
+/^SWAP:/                { sub("^SWAP: *", ""); printf ">, Swap <"; }
+/^The CPU time/         { printf ">, CPU <"; }
+                        { if (skip > 0) next; printf "%s",$0; }
+END                     { print; }
+' | sed 's/^\(.*\)Command <\(.*\)>, Event <\(.*\)$/\2/g'`
+
+$jobcmd
+
